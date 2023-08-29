@@ -1,45 +1,46 @@
+// Name: 767. Reorganize String
+// Difficulty: Medium
+// Acceptance rate: 54.3%
+// Runtime: Beats 5.63%
+// Memory usage: Beats 5.30%
+
 fun reorganizeString(s: String): String {
     if (s.length in 0..1) return s
 
     var letters = LinkedHashMap<Char,Int>()
-    var organized = charArrayOf()
     var max = 'A'
-    var premax = 'A'
 
-    for (letter in s) {
-        if (letter !in letters.keys) {
-            var count = s.count {it == letter}
-            letters[letter] = count
-            if (count > (letters[max] ?: 0)) {
-                premax = max
-                max = letter
-            }
-            if (count <= (letters[max] ?: 0) && count > (letters[premax] ?: 0) && letter != max) premax = letter
+    for (i in 0 until s.length) {
+        letters[s[i]] = (letters[s[i]] ?: 0) + 1
+        if (letters[s[i]]!! > (letters[max] ?: 0)) {
+            max = s[i]
         }
     }
 
-    if (max == 'A' || premax == 'A') return ""
+    if (letters.size == 1) return ""
+    if (letters[max]!! - 1 > s.length - letters[max]!!) return ""
+
+    var organized = charArrayOf()
 
     while (letters.values.filter { it > 0 }.isNotEmpty()) {
+        if (organized.isNotEmpty() && organized.last() == max) return ""
         organized += max
-        organized += premax
         letters[max] = letters[max]!! - 1
-        letters[premax] = letters[premax]!! - 1
         for (letter in letters.keys) {
             if (letters.values.filter { it > 0 }.isEmpty()) return String(organized)
-            if (letters[letter]!! > letters[max]!!) {
-                premax = max
+            if (letter != max && letters[letter] != 0) {
+                organized += letter
+                letters[letter] = letters[letter]!! - 1
+                break
+            }
+        }
+        for (letter in letters.keys) {
+            if (letter != max && letters[letter]!! > letters[max]!!) {
                 max = letter
-            }
-            if (letters[letter]!! > letters[premax]!! && letter != max) {
-                premax = letter
+                break
             }
         }
-        if ((letters[max] == 0 && letters[premax] == 0) || (letters[max] == 1 && letters[premax] == 0)) {
-            organized += max
-            return String(organized)
-        }
-        if ((letters[max] == 0 && letters[premax]!! > 0) || (letters[max]!! > 1 && letters[premax] == 0)) return ""
+        if ((letters[max] == 0)) return String(organized)
     }
 
     return String(organized)
@@ -52,6 +53,8 @@ fun main() {
     println("aab:" + reorganizeString("aab"))
     println("aaa:" + reorganizeString("aaa"))
     println("aaab:" + reorganizeString("aaab"))
+    println("vvvlo:" + reorganizeString("vvvlo"))
+    println("aaaaayyyybbbc:" + reorganizeString("aaaaayyyybbbc"))
     println("baaba:" + reorganizeString("baaba"))
     println("bfrbs:" + reorganizeString("bfrbs"))
     println(reorganizeString(long))
