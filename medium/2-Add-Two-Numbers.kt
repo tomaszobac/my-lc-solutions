@@ -26,7 +26,7 @@ fun addTwoNumbers(l1: ListNode?, l2: ListNode?): ListNode? {
     val result = ListNode(sum.reversed()[0].digitToInt())
     var current = result
 
-    for (i in 1..<sum.length) {
+    for (i in 1 until sum.length) {
         current.next = ListNode(sum.reversed()[i].digitToInt())
         current = current.next!!
     }
